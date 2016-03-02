@@ -1,6 +1,6 @@
 **Credits to** 
-https://github.com/projectatomic/docker-image-examples/blob/master/rhel-libvirt/libvirtd/Dockerfile
-http://www.projectatomic.io/blog/2014/10/libvirtd_in_containers/
+ - https://github.com/projectatomic/docker-image-examples/blob/master/rhel-libvirt/libvirtd/Dockerfile
+ - http://www.projectatomic.io/blog/2014/10/libvirtd_in_containers/
 
 The Container supports running qemu hypervisor out of the box. However to leverage hardware acceleration, the underlying host needs to support Visualization Technology (VT).
 
