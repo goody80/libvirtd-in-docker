@@ -14,7 +14,7 @@ Check your processor supports VT
 For more info refer http://www.howtogeek.com/howto/linux/linux-tip-how-to-tell-if-your-processor-supports-vt/
 
 Run
-```{r, engine='sh'}
+```
 egrep ‘(vmx|svm)’ /proc/cpuinfo
 ```
 
@@ -34,18 +34,16 @@ Create/Edit file /etc/modprobe.d/kvm-nested.conf with contents
     options kvm_intel nested=1
 
 Unload and reload the module
-```{r, engine='sh'}
+```
 modprobe -r kvm_intel
 modprobe kvm_intel
 ```    
 
 The output of this command is 
-```{r, engine='sh'}
+```
 cat /sys/module/kvm_intel/parameters/nested
 ```
 should show
 
     Y
-
-
 
