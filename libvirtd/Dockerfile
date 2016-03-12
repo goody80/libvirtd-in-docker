@@ -18,6 +18,7 @@ systemctl enable virtlockd
 
 EXPOSE 22
 EXPOSE 16509
+EXPOSE 5900
 
 RUN echo "listen_tls = 0" >> /etc/libvirt/libvirtd.conf; \
 echo 'listen_tcp = 1' >> /etc/libvirt/libvirtd.conf; \
@@ -29,8 +30,11 @@ RUN echo 'vnc_listen = "0.0.0.0"' >> /etc/libvirt/qemu.conf
 
 RUN echo 'LIBVIRTD_ARGS="--listen"' >> /etc/sysconfig/libvirtd
 
-## Edit the service file which includes ExecStartPost to chmod /dev/kvm
-RUN sed -i "/^\[Service\]/a ExecStartPost=\/bin\/chmod 666 /dev/kvm" /usr/lib/systemd/system/libvirtd.service
+ADD customlibvirtpost.service /usr/lib/systemd/system/customlibvirtpost.service
+ADD customlibvirtpost.sh /customlibvirtpost.sh
+RUN chmod a+x /customlibvirtpost.sh
+Add network.xml /network.xml
+RUN systemctl enable customlibvirtpost
 
 VOLUME [ "/sys/fs/cgroup" ]
 CMD ["/usr/sbin/init"]
