@@ -47,3 +47,16 @@ should show
 
     Y
 
+Running the container
+----------------------------------
+This image needs to be run in privileged mode
+
+E.g.
+```
+docker run -d --privilege   d -e 'container=docker' -v /sys/fs/cgroup:/sys/fs/cgroup:rw hrishikesh/libvirtd
+```
+You can also forward ports to connect to the libvirtd service from remote machines
+```
+docker run -d --privilege   d -e 'container=docker'-p 10001:16509 -p 10002:22 -p 10003:5900  -v /sys/fs/cgroup:/sys/fs/cgroup:rw hrishikesh/libvirtd
+```
+
