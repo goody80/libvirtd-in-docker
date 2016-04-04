@@ -1,24 +1,16 @@
-FROM centos:latest
-ENV container docker
+FROM hrishikesh/systemd-in-docker
 
-RUN yum -y update && yum clean all
-RUN yum -y install systemd 
-#RUN yum -y install libvirt-daemon-driver-{network,interface,storage,qemu} qemu systemd libvirt-daemon && yum clean all; \
 RUN yum -y install libvirt-daemon-driver-* libvirt-daemon libvirt-daemon-kvm qemu-kvm && yum clean all; \
-(cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == systemd-tmpfiles-setup.service ] || rm -f $i; done); \
-rm -f /lib/systemd/system/multi-user.target.wants/*;\
-rm -f /etc/systemd/system/*.wants/*;\
-rm -f /lib/systemd/system/local-fs.target.wants/*; \
-rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
-rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
-rm -f /lib/systemd/system/basic.target.wants/*;\
-rm -f /lib/systemd/system/anaconda.target.wants/*; \
-systemctl enable libvirtd; \
-systemctl enable virtlockd 
+RUN systemctl enable libvirtd; systemctl enable virtlockd 
 
-EXPOSE 22
-EXPOSE 16509
-EXPOSE 5900
+RUN yum install -y openssh-server openssh-clients arpwatch
+
+RUN echo "root:root" |chpasswd
+RUN systemctl enable sshd
+RUN sed -i 's|[#]*PermitRootLogin no|PermitRootLogin yes|g' /etc/ssh/sshd_config
+RUN sed -i 's|[#]*PasswordAuthentication no|PasswordAuthentication yes|g' /etc/ssh/sshd_config
+RUN sed -i 's|[#]*ChallengeResponseAuthentication no|ChallengeResponseAuthentication yes|g' /etc/ssh/sshd_config
+RUN sed -i 's|UsePAM no|UsePAM yes|g' /etc/ssh/sshd_config
 
 RUN echo "listen_tls = 0" >> /etc/libvirt/libvirtd.conf; \
 echo 'listen_tcp = 1' >> /etc/libvirt/libvirtd.conf; \
@@ -35,6 +27,11 @@ ADD customlibvirtpost.sh /customlibvirtpost.sh
 RUN chmod a+x /customlibvirtpost.sh
 Add network.xml /network.xml
 RUN systemctl enable customlibvirtpost
+
+
+EXPOSE 22
+EXPOSE 16509
+EXPOSE 5900
 
 VOLUME [ "/sys/fs/cgroup" ]
 CMD ["/usr/sbin/init"]
