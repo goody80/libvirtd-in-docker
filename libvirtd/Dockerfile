@@ -1,8 +1,8 @@
-FROM hrishikesh/systemd-in-docker
+FROM codepost/centos-systemd:latest
+MAINTAINER ralfyang <"ralfyang@code-post.com">
 
-RUN yum -y install libvirt-daemon-driver-* libvirt-daemon libvirt-daemon-kvm qemu-kvm && yum clean all; \
+RUN yum -y install libvirt-client libvirt-daemon-driver-* libvirt-daemon libvirt-daemon-kvm qemu-kvm && yum clean all
 RUN systemctl enable libvirtd; systemctl enable virtlockd 
-
 RUN yum install -y openssh-server openssh-clients arpwatch
 
 RUN echo "root:root" |chpasswd
@@ -22,10 +22,10 @@ RUN echo 'vnc_listen = "0.0.0.0"' >> /etc/libvirt/qemu.conf
 
 RUN echo 'LIBVIRTD_ARGS="--listen"' >> /etc/sysconfig/libvirtd
 
-ADD customlibvirtpost.service /usr/lib/systemd/system/customlibvirtpost.service
-ADD customlibvirtpost.sh /customlibvirtpost.sh
+COPY network.xml /network.xml
+COPY customlibvirtpost.service /usr/lib/systemd/system/customlibvirtpost.service
+COPY customlibvirtpost.sh /customlibvirtpost.sh
 RUN chmod a+x /customlibvirtpost.sh
-Add network.xml /network.xml
 RUN systemctl enable customlibvirtpost
 
 
@@ -33,6 +33,7 @@ EXPOSE 22
 EXPOSE 16509
 EXPOSE 5900
 
-VOLUME [ "/sys/fs/cgroup" ]
-CMD ["/usr/sbin/init"]
+VOLUME ["/sys/fs/cgroup"]
+#CMD  [ "/usr/sbin/init" ]
+ENTRYPOINT  ["/usr/sbin/init"]
 
